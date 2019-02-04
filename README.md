@@ -26,5 +26,8 @@ When you press the copy button, that data in decrypted and now it is in clear te
 
 To select any line, just press the grey square on the left. The line will become blue.
 
+## More about
+This software is incomplete, undocumented and unstable, it may or may not work for you, it may oy may not have critical bugs. You can modify if you need.
+
 ## Warning
 I AM NOT LIABLE IF YOU LOSE YOUR PASSWORD, DATA, OR IF IT GET STOLEN, OR IF YOUR PC EXPLODES AND YOU DIE. This software was made by me TO ME. This kind of warning should be obvious, but I explicitly write it.  USE AT YOUR OWN FUCKING RISK.
