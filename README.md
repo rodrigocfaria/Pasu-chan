@@ -10,7 +10,7 @@ You need to have the following Python modules:
 * First, create a empty file with `.pasu` extension.
 * Run Pasu-chan (`py Pasu-chan.py`) and load the empty file.
 * Create a master password for this file.
-* Starting using (the UI is self explanatory).
+* Start use (the UI is self explanatory).
 
 ## How it works
 The basic triple in this program is `name`, `login`, `password`. I recommend use in this way:
