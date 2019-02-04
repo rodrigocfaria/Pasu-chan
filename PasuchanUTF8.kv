@@ -1,0 +1,434 @@
+#:kivy 1.10.0
+<MasterPasswordPopup@Popup>:
+    title: 'Type the master password:'
+    title_font: "fonts\\NotoSansCJK-Medium.ttc"
+    title_size: 12 
+    size_hint: None, None
+    size: 400,120
+    separator_height: 0
+    background: 'buttons\\master_bg.png'
+    border: 0, 0, 0, 0
+
+    RelativeLayout:
+        DataInput:
+            id: masterpw
+            pos: 0, 30
+            size_hint: None, None
+            size: 350, 25
+            multiline: False
+            password: True
+            on_text_validate: app.root.decrypt_names(root.ids['masterpw'].text, root)
+        ShowButton:
+            size_hint: None, None
+            size: 25, 25
+            pos: 350, 30
+            on_state: app.root.mp_show(root, self.state, 'masterpw')
+        StandardButton:
+            text: 'OK'
+            pos: 0, 0
+            size_hint: 1, None
+            size: 0, 25
+            on_release: app.root.decrypt_names(root.ids['masterpw'].text, root)
+
+<EncryptingPopup@Popup>:
+    title: 'Encrypting and saving file. It will take some time and the window may freeze.\nUsing AES256.' 
+    title_font: "fonts\\NotoSansCJK-Medium.ttc"
+    title_size: 12 
+    size_hint: None, None
+    size: 400,100
+    separator_height: 0
+    background: 'buttons\\master_bg.png'
+    border: 0, 0, 0, 0
+
+    Label:
+        id: l
+        #:kivy 1.10.0
+
+<ChangempPopup@Popup>:
+    title: 'The file will be saved. IF YOU FORGET THE MASTER PASSWORD, IT WILL NOT BE POSSIBLE TO DECRYPT THE FILE.'
+    title_font: "fonts\\NotoSansCJK-Medium.ttc"
+    title_size: 12 
+    size_hint: None, None
+    markup: True
+    size: 400,210
+    separator_height: 0
+    background: 'buttons\\master_bg.png'
+    border: 0, 0, 0, 0
+
+    RelativeLayout:
+        Label:
+            id: msg
+            pos: 8, 95
+            size_hint: None, None
+            size: 350, 25
+            text: 'Type and retype the new master password below.'
+            font_size: 14
+            size: self.texture_size
+            font_name: "fonts\\NotoSansCJK-Medium.ttc"
+            font_size: 12
+        DataInput:
+            id: masterpwone
+            pos: 0, 30
+            size_hint: None, None
+            size: 350, 25
+            multiline: False
+            password: True
+            on_text_validate: app.root.mp_ok(root)
+        ShowButton:
+            size_hint: None, None
+            size: 25, 25
+            pos: 350, 30
+            on_state: app.root.mp_show(root, self.state, 'masterpwone')    
+        DataInput:
+            id: masterpwtwo
+            pos: 0, 60
+            size_hint: None, None
+            size: 350, 25
+            multiline: False
+            password: True
+            
+            #on_text: app.root.change_mp_text(self)
+        ShowButton:
+            size_hint: None, None
+            size: 25, 25
+            pos: 350, 60
+            on_state: app.root.mp_show(root, self.state, 'masterpwtwo') 
+        StandardButton:
+            text: 'OK'
+            pos: 0, 0
+            size_hint: None, None
+            size: 280, 25
+            on_release: app.root.mp_ok(root)
+        StandardButton:
+            text: 'Cancel'
+            pos: 285, 0
+            size_hint: None, None
+            size: 90, 25
+            on_release: root.dismiss()
+
+<TypeDropDown@DropDown>:
+    scroll_timeout: 0
+
+    
+
+<FileInput@TextInput>:
+    foreground_color: 0.3, 0.3, 0.3, 1
+    border: 16,16,16,16
+    padding: 5, (self.height-self.line_height)/2
+    background_normal: ''
+    background_active: 'buttons\\active_text.png'
+    write_tab: False
+    multiline: False
+    font_name: "fonts\\NotoSansCJK-Medium.ttc"
+    font_size: 12
+
+<SearchInput@TextInput>:
+
+    foreground_color: 0.3, 0.3, 0.3, 1
+    font_name: "fonts\\NotoSansCJK-Medium.ttc"
+    font_size: 12
+    padding: 5, (self.height-self.line_height)/2
+    border: 16,16,16,16
+    background_normal: ''
+    background_active: 'buttons\\active_text.png'
+    write_tab: False
+    blank: True
+    already_focused: False
+    multiline: False
+
+<DataInput@TextInput>:
+    font_name: "fonts\\NotoSansCJK-Medium.ttc"
+    font_size: 12
+    foreground_color: 0.3, 0.3, 0.3, 1
+    padding: 5, (self.height-self.line_height)/2
+    border: 16,16,16,16
+    background_normal: ''
+    background_active: 'buttons\\active_text.png'
+    write_tab: False
+    on_focus: app.root.scroll_to(self)
+    multiline: False
+
+<StandardButton@Button>:
+    font_name: "fonts\\NotoSansCJK-Medium.ttc"
+    font_size: 12
+    background_normal: 'buttons\\normal.png'
+    background_down: 'buttons\\pressed.png'
+    background_disabled_normal: 'buttons\\disabled.png'
+    disabled_color: 0.1, 0.1, 0.1, 0.4
+
+<ShowButton@ToggleButton>:
+    border: 0, 0, 0, 0
+    size_hint: None, 1
+    width: self.height
+    background_normal: 'buttons\\show_normal.png'
+    background_down: 'buttons\\show_pressed.png'
+
+<CopyButton@Button>:
+    border: 0, 0, 0, 0
+    size_hint: None, 1
+    width: self.height
+    background_normal: 'buttons\\copy_normal.png'
+    background_down: 'buttons\\copy_pressed.png'
+
+<VerSeparator@Label>:
+    size_hint: None, 1
+    size: 4, 0
+
+<HorSeparator@Label>:
+    size_hint: 1, None
+    size: 0, 4
+
+<ActionBar1@RelativeLayout>:
+    size_hint: 1, None
+    size: 0, 25
+
+    StandardButton:
+        id: add_entry
+        disabled: True
+        size_hint: None, 1
+        size: 250, 0
+        pos_hint: {'x': 0.03}
+        text: 'Add new entry'
+        on_release: app.root.add_entry()
+
+    StandardButton:
+        id: del_entry
+        size_hint: None, 1
+        size: 80, 0
+        pos: root.ids.add_entry.pos[0] + root.ids.add_entry.size[0] + 10, 0
+        text: 'Delete'
+        disabled: True
+        on_release: app.root.delete_entry()
+
+    StandardButton:
+        id: save_btn
+        disabled: True
+        size_hint: None, 1
+        size: 250, 0
+        pos: 0.97 * root.width - self.size[0], 0
+        text: 'Save file'
+        on_release: app.root.open_encrypting_popup()
+
+<ActionBar2@RelativeLayout>:
+    size_hint: 1, None
+    size: 0, 25
+
+    StandardButton:
+        id: select_all
+        size_hint: None, 1
+        size: 100, 0
+        pos_hint: {'x': 0.03}
+        disabled: True
+        text: 'Select all'
+        on_release: app.root.select_all()
+
+    StandardButton:
+        id: deselect_all
+        size_hint: None, 1
+        size: 100, 0
+        pos: root.ids.select_all.pos[0] + root.ids.select_all.size[0] + 10, 0
+        disabled: True
+        text: 'Deselect all'
+        on_release: app.root.deselect_all()
+
+    StandardButton:
+        id: change_mp_btn
+        disabled: True
+        size_hint: None, 1
+        size: 250, 0
+        pos: 0.97 * root.width - self.size[0], 0
+        text: 'Change master password'
+        on_release: app.root.change_mp()
+
+<StatusBar@Label>:
+    font_name: "fonts\\NotoSansCJK-Medium.ttc"
+    font_size: 12
+    size_hint: 1, None
+    size: 0, 20
+    texture_size: self.size
+    text_size: self.texture_size
+    padding_x: dp(10)
+    halign: 'left'
+    valign: 'middle'
+    canvas.before:
+        Color:
+            rgba: 20/255, 20/255, 40/255, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+<SearchBar@BoxLayout>:
+    size_hint: 1, None
+    size: 0, 25
+
+    SearchInput:
+        id: search_field
+        on_focus: app.root.search_focus(self)
+        #on_text: app.root.search4(self)
+
+    VerSeparator:
+
+    StandardButton:
+        size_hint: None, 1
+        size: 150, 0
+        text: 'Clear search'
+        on_release: app.root.clear_search()
+
+<FileBar@BoxLayout>:
+    size_hint: 1, None
+    size: 0, 25
+    #pos: 0, self.parent.height - self.size[1]      
+       
+    Label:
+        id: pasu_label
+        size_hint: None, 1
+        size: 100, 0
+        pos: 0, 0        
+        text: '.pasu file:'
+        font_name: "fonts\\NotoSansCJK-Medium.ttc"
+        font_size: 12 
+        canvas.before:
+            Color:
+                rgba: 1,1,1,.2
+            Rectangle:
+                size: self.size
+                pos: self.pos
+    
+    FileInput:
+        id: current_file
+        size_hint: 1, 1
+        disabled: True
+        background_disabled_normal: 'buttons//disabled.png'
+        #pos: root.ids.pasu_label.size[0], 0
+
+    VerSeparator:    
+
+    StandardButton:
+        size_hint: None, 1
+        size: dp(150), 0 
+        text: 'Load file'
+        on_release: app.root.open_filechooser()
+    # VerSeparator:
+
+    # StandardButton:
+    #     size_hint: None, 1
+    #     size: dp(100), 0
+    #     text: 'Save file' 
+
+    # VerSeparator:
+
+    # StandardButton:
+    #     size_hint: None, 1
+    #     size: dp(30), 0
+    #     text: 'D'
+
+<Checkboxx@Button>:
+    size_hint: None, None
+    size: self.parent.size[1], self.parent.size[1] 
+    background_color: 0, 0, 0, 0
+
+<EntryLine@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint: 1, None
+    size: 0, 25
+    color: 0, 0, 0, 0
+
+    canvas:
+        Color:
+            rgba: self.color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Checkboxx:
+        on_release: app.root.select_entry(root) 
+    
+    VerSeparator:
+        size: 1, 0
+
+    DataInput:
+        id: name
+        on_text: app.root.text_changed(self, 'name')
+        on_focus: app.root.focus(self, 'name')
+        name_changed: False
+    
+    CopyButton:
+        on_release: app.root.copy(self, 'name')
+
+    VerSeparator:
+
+    DataInput:
+        id: login
+        on_text: app.root.text_changed(self, 'login')
+        on_focus: app.root.focus(self, 'login')
+        
+        login_changed: False
+        password_mask: '*'
+
+    ShowButton:
+        id: login_button
+        on_state: app.root.show(self, self.state, 'login')
+
+    CopyButton:
+        on_release: app.root.copy(self, 'login')
+
+    VerSeparator:
+
+    DataInput:
+        id: password
+        on_focus: app.root.focus(self, 'password')
+        on_text: app.root.text_changed(self, 'password')
+        pw_changed: False
+        password_mask: '*'
+
+    ShowButton:
+        id: password_button
+        on_state: app.root.show(self, self.state, 'password')
+
+    CopyButton:
+        on_release: app.root.copy(self, 'password')
+    VerSeparator:
+        size: 20, 0
+    
+
+
+
+<PasswordsList@BoxLayout>:
+    size_hint: 1, None
+    size: 0, self.parent.height - 175
+
+    ScrollView:
+        id: scroll
+        scroll_timeout: 0
+        bar_width: 15
+        bar_inactive_color: 0.7, 0.7, 0.7, 0.4
+        scroll_type: ['bars', 'content']
+
+        GridLayout:
+            id: grid
+            cols: 1
+            spacing: 3
+            height: self.minimum_height
+            size_hint: 1, None
+
+<InterfaceWidget>:
+
+    FileBar:
+        pos: 0, root.height - self.size[1] - 4
+
+    SearchBar:
+        pos: 0, root.height - self.size[1] - 40
+
+    ActionBar1:
+        pos: 0, root.height - self.size[1] - 80
+
+    PasswordsList:
+        pos: 0, 60
+
+    ActionBar2:
+        pos: 0, 30
+
+    StatusBar:
+        id: status_bar
+        pos: 0, 0
