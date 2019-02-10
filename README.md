@@ -3,7 +3,7 @@ A simple offline password manager that I am creating in my free time (still in d
 
 ## External dependences
 You need to have the following Python modules:
-* Kivy dasdasdaadsad
+* Kivy dasdasdaadsaddfasdasd
 * pycrypto
 
 ## How to use
