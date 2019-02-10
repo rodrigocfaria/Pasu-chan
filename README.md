@@ -1,4 +1,4 @@
-# Pasu-chan
+# Pasu-chan 0.1 (alpha)
 A simple offline password manager that I am creating in my free time (still in development, but it works).
 
 ## External dependences
