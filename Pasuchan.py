@@ -25,6 +25,7 @@ import threading as th
 import queue as q
 import os
 from functools import partial
+from time import perf_counter
 
 Config.set('kivy', 'window_icon', "KaraoPy256.png")
 Config.set('graphics', 'width', '1000')
@@ -33,6 +34,8 @@ Config.set('graphics', 'height', '600')
 
 with open("PasuchanUTF8.kv", encoding='utf-8') as f:
     Builder.load_string(f.read())
+
+SEARCH_INDEX_CONST = [0, 100000]
 
 class InterfaceWidget(FloatLayout):
 
@@ -49,17 +52,17 @@ class InterfaceWidget(FloatLayout):
     master_password = ''
     user_input = True
     j=0
+    search_indexes = SEARCH_INDEX_CONST
     
     def __init__(self, **kwargs):
         super(InterfaceWidget, self).__init__(**kwargs)
         
         search_bar = self.search_class('SearchBar')
         search_bar.ids['search_field'].text = self.search_bar_msg
+        search_bar.ids['search_field'].bind(text = self.search)
 
-        status_bar = self.search_class('StatusBar')
-        if self.file_loaded == False:
-            status_bar.text = 'Load a file to start.'
-
+        self.update_status_bar('Load a file to start.')
+    
     def update(self, dt):
         pass
     
@@ -71,7 +74,7 @@ class InterfaceWidget(FloatLayout):
                 'new': True, 
                 'modified': [False, False, False],
                 'visible': [True, False, False]}
-
+        self.search_indexes = SEARCH_INDEX_CONST
         self.unenc_data.append(data)
         self.update_entries()
 
@@ -95,6 +98,8 @@ class InterfaceWidget(FloatLayout):
         search_bar.ids['search_field'].foreground_color = self.search_bar_fore_color
         search_bar.ids['search_field'].focus = False
         search_bar.ids['search_field'].already_focused = False
+        self.search_indexes = SEARCH_INDEX_CONST
+        self.update_entries()
 
     def search_focus(self, widget):
        if widget.already_focused == False and widget.focus == True:
@@ -141,28 +146,30 @@ class InterfaceWidget(FloatLayout):
             entry = Factory.EntryLine()
             entry.index = self.n
             data['index'] = self.n
-            widget.ids['grid'].add_widget(entry)
             self.entries.append(entry)
             self.n += 1
 
-            if data['new'] == True:
-                entry.ids.name.text = '(Name)'
-                entry.ids.login.text = '(Login)'
-                entry.ids.password.text = '(Password)'
-                #data['new'] = False
-            else:
-                entry.ids.name.text = data['name']
-            if data['enc_status'][1] == True:                
-                entry.ids.login.text = '(Login, encrypted)'
-            else:
-                entry.ids.login.text = '(Login, decrypted)'
-            if data['enc_status'][2] == True:
-                entry.ids.password.text = '(Password, encrypted)'
-            else:
-                entry.ids.password.text = '(Password, decrypted)'
+            if self.search_indexes[0] <= entry.index <= self.search_indexes[1]:
+                widget.ids['grid'].add_widget(entry)
 
-            entry.state = 'normal'
-            entry.color = self.default_entry_color
+                if data['new'] == True:
+                    entry.ids.name.text = '(Name)'
+                    entry.ids.login.text = '(Login)'
+                    entry.ids.password.text = '(Password)'
+                    #data['new'] = False
+                else:
+                    entry.ids.name.text = data['name']
+                if data['enc_status'][1] == True:                
+                    entry.ids.login.text = '(Login, encrypted)'
+                else:
+                    entry.ids.login.text = '(Login, decrypted)'
+                if data['enc_status'][2] == True:
+                    entry.ids.password.text = '(Password, encrypted)'
+                else:
+                    entry.ids.password.text = '(Password, decrypted)'
+
+                entry.state = 'normal'
+                entry.color = self.default_entry_color
     
         self.update_selection_button()
         self.paint_modified()
@@ -172,7 +179,7 @@ class InterfaceWidget(FloatLayout):
         ab1 = self.search_class('ActionBar1')
         ab1.ids.save_btn.disabled = False
         ab1.ids.add_entry.disabled = False
-                
+                        
     def update_selection_button(self):
         actionbar2 = self.search_class('ActionBar2')
         actionbar1 = self.search_class('ActionBar1')
@@ -256,7 +263,8 @@ class InterfaceWidget(FloatLayout):
 
         try:
             self.unenc_data = pg.decrypt_names(masterpw, self.enc_data)
-        except:
+        except Exception as e:
+            print(e)
             if popup != None:
                 popup.title = 'Password is incorrect or file corrupted, try again.'
                 popup.title_color = [1,0,0.1,1]
@@ -276,6 +284,11 @@ class InterfaceWidget(FloatLayout):
                 data['modified'] = [False, False, False]
                 data['visible'] = [True, False, False]
             #os.remove(self.current_file)
+            self.indexes_to_display = []
+            for i in range(0,len(self.unenc_data)):
+                self.indexes_to_display.append(i)
+            sb = self.search_class('SearchBar')
+            sb.ids['search_field'].disabled = False
             self.update_entries()
 
 
@@ -302,8 +315,8 @@ class InterfaceWidget(FloatLayout):
 
         pg.update_file(self.current_file, enc_data)
         self.load_file(self.current_file)
-        self.update_status_bar('File saved.')
         enc_popup.dismiss()
+        self.update_status_bar('File saved.')
     
     def change_mp(self):
         changemp_popup = Factory.ChangempPopup()
@@ -481,26 +494,40 @@ class InterfaceWidget(FloatLayout):
                     pass
         self.user_input = True
 
-    def search4(self, widget):
-        pass
-        # search_gen = pg.binary_search_gen(self.unenc_data, widget.text, 'name')
-        # for i in search_gen:
-        #     if i == 'SEARCH_NOT_FOUND':
-        #         self.entries = []
-        #     else:
-        #         print(i)
+    def search(self, widget, search_text):
+        if widget.focus == True:
+            self.search_indexes = pg.search_bisect(self.unenc_data, search_text, 'name')
+            if self.search_indexes == None:
+                self.search_indexes = [-1, -1]
+            self.update_entries()
 
     def copy(self, widget, field):
         index = widget.parent.index
         if field == 'name':
             text = self.unenc_data[index]['name']
-        elif field == 'login' and self.unenc_data[index]['enc_status'][1] == False:
-            text = self.unenc_data[index]['login']
-        elif field == 'password' and self.unenc_data[index]['enc_status'][2] == False:
-            text =  self.unenc_data[index]['password']
+        elif field == 'login':
+            if self.unenc_data[index]['enc_status'][1] == False:
+                text = self.unenc_data[index]['login']
+            else:
+                self.update_status_bar('Decrypting.')
+                text = pg.decrypt(self.master_password, self.unenc_data[index]['login'])
+                self.unenc_data[index]['enc_status'][1] == False
+                self.update_status_bar('Copied to clipboard.')
+                widget.parent.ids['login'].text = '(Login, decrypted)'
+        elif field == 'password':
+            if self.unenc_data[index]['enc_status'][2] == False:
+                text =  self.unenc_data[index]['password']
+            else:
+                self.update_status_bar('Decrypting.')
+                text = pg.decrypt(self.master_password, self.unenc_data[index]['password'])
+                self.unenc_data[index]['enc_status'][2] == False
+                self.update_status_bar('Copied to clipboard.')
+                widget.parent.ids['password'].text = '(Password, decrypted)'
         else:
             text = ''
         widget.parent.ids[field].copy(data = text)
+
+
 
 class PasuchanApp(App):
 

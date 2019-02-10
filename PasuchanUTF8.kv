@@ -265,7 +265,8 @@
     SearchInput:
         id: search_field
         on_focus: app.root.search_focus(self)
-        #on_text: app.root.search4(self)
+        disabled: True
+        background_disabled_normal: 'buttons//disabled.png'
 
     VerSeparator:
 
@@ -274,6 +275,7 @@
         size: 150, 0
         text: 'Clear search'
         on_release: app.root.clear_search()
+
 
 <FileBar@BoxLayout>:
     size_hint: 1, None
